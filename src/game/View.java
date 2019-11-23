@@ -19,13 +19,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 
-// TODO: To handle button click events, implement ActionListener
-// TODO: To handle keyboard events, implement KeyListener
-public class View extends JPanel {
+public class View extends JPanel implements ActionListener, KeyListener {
 	private Model game;
 	
-	// TODO: Encapsulate a UI component to display
-	//          the score and one to display the board
+	private JLabel score;
+	private JPanel board;
 	
 	// Constructor sets up the view
 	public View(Model game) {
@@ -33,59 +31,58 @@ public class View extends JPanel {
 		this.game = game;
 		
 		// Specify the layout to use for view components
-		// TODO: Set the layout (box layout)
-		// TODO: Set an empty border to pad the UI components
-		// TODO: Set the background color to (250, 248, 239)
-		
-		// Add a title
-		// TODO: Create a JLabel to store the title text
-		// TODO: Set the font to be "Dialog", bold, and 50 pts
-		// TODO: Set the foreground color to be (119, 110, 101)
-		// TODO: Set the alignment to be "center"
-		// TODO: Add the title to the JPanel
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		setBackground(new Color(250, 248, 239));
 		
 		// Add an icon to the title
-		// TODO: Create a JLabel to store the title icon
-		// TODO: Set the alignment to be "center"
-		// TODO: Add an empty border to pad the icon
-		// TODO: Add the icon to the JPanel
+		JLabel icon = new JLabel(new ImageIcon("img/2048-logo.png"));
+		icon.setAlignmentX(Component.CENTER_ALIGNMENT);
+		icon.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		add(icon);
+		
+		// Add a title
+//		JLabel title = new JLabel("2048");
+//		title.setFont(new Font("Dialog", Font.BOLD, 50));
+//		title.setForeground(new Color(119, 110, 101));
+//		title.setAlignmentX(Component.CENTER_ALIGNMENT);
+//		add(title);
 		
 		// Create a JLabel to store the game score and add it to the view
-		// TODO: Get the current game score from the model
-		// TODO: Create a new JLabel to present the score
-		// TODO: Add an empty border to pad the text
-		// TODO: Set the foreground color to be (119, 110, 101)
-		// TODO: Set the alignment to be "center"
-		// TODO: Add the score to the JPanel
+		score = new JLabel("Score: " + String.valueOf(game.getScore()));
+		score.setFont(new Font("Dialog", Font.BOLD, 28));
+		score.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+		score.setForeground(new Color(119, 110, 101));
+		score.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(score);
 		
 		// Create a JPanel to store the board state and add it to the view
-		// TODO: Create a JPanel to store the board
-		// TODO: Set the layout (grid layout)
-		// TODO: Add a line border with color (187, 173, 160)
-		// TODO: Set the alignment to be "center"
-		// TODO: Add the board to the JPanel
-		// TODO: Call a view method to insert the tiles
+		board = new JPanel();
+		board.setLayout(new GridLayout(game.getSize(), game.getSize()));
+		board.setBorder(BorderFactory.createLineBorder(new Color(187, 173, 160), 6));
+		board.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(board);
+		syncGameState();
 		
-		// Create a JButton to store the reset button and add it to the view
-		// TODO: Create a JButton to reset the game
-		// TODO: Add Unicode to the button (hex 27f2)
-		// TODO: Set the alignment to be "center"
-		// TODO: Set the font to be "Dialog", bold, and 20 pts
-		// TODO: Disable focus accent with button.setFocusPainted(false)
-		// TODO: Set the background color to be (142, 122, 102)
-		// TODO: Set the foreground color to be (249, 246, 242)
-		// TODO: Set a compound border consisting of two line borders,
-		//            first with color (250, 248, 239)
-		//            and second with color (142, 122, 102)
-		// TODO: Add the reset button to the JPanel
+		// Create a JPanel to store the reset button and add it to the view
+		JButton resetButton = new JButton("\u27f2 Reset Game");
+		resetButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		resetButton.setFont(new Font("Dialog", Font.BOLD, 20));
+		resetButton.setFocusPainted(false);
+		resetButton.setBackground(new Color(142, 122, 102));
+		resetButton.setForeground(new Color(249, 246, 242));
+		resetButton.setBorder(BorderFactory.createCompoundBorder(
+			BorderFactory.createLineBorder(new Color(250, 248, 239), 10),
+			BorderFactory.createLineBorder(new Color(142, 122, 102), 10)
+		));
+		add(resetButton);
 		
 		// Listen for key press events
-		// TODO: Add "this" as a listener of key press events
-		// TODO: Designate "this" as the focus of keyboard events
-		//            by calling this.setFocusable(true)
+		addKeyListener(this);
+		setFocusable(true);
 		
 		// Listen for button press events
-		// TODO: Add "this" as an action listener of the reset button
+		resetButton.addActionListener(this);
 	}
 
 
@@ -94,14 +91,16 @@ public class View extends JPanel {
 	 *   current state
 	 */
 	private void syncGameState() {
-		// TODO: Remove all tiles from the board
-		// TODO: Loop through the rows and columns
-		// TODO: Get the value for the tile
-		// TODO: Call a local factory method to make the tile into a JLabel
-		// TODO: Add the tile JLabel to the board
-		// TODO: Update the score JLabel text
-		// TODO: Revalidate the board component
-		// TODO: Revalidate the score component
+		board.removeAll();
+		for (int r = 0; r < game.getSize(); r++) {
+			for (int c = 0; c < game.getSize(); c++) {
+				int value = game.getTile(r, c);
+				board.add(makeTile(value));
+			}
+		}
+		score.setText("Score: " + String.valueOf(game.getScore()));
+		board.revalidate();
+		score.revalidate();
 	}
 	
 	
@@ -110,34 +109,35 @@ public class View extends JPanel {
 	 */
 	private static JLabel makeTile(int value) {
 		// Make a new tile
-		// TODO: Create a new JLabel for this tile
+		JLabel tile = new JLabel();
 		
 		// Display the value of the tile
-		// TODO: If the tile is non-zero, set the label text
+		if (value > 0) {
+			tile.setText(String.valueOf(value));
+		}
 		
 		// Set the size of the tile
-		// TODO: Set the dimensions of the tile to be 100 x 100
-		// HINT: use setMinimumSize, setPreferredSize, and setMaximumSize
+		tile.setMinimumSize(new Dimension(100, 100));
+		tile.setPreferredSize(new Dimension(100, 100));
+		tile.setMaximumSize(new Dimension(100, 100));
 		
 		// Make the text centered in the tile
-		// TODO: Use setHorizontalAlignment and setVerticalAlignment
-		//            to center the text within the tile
+		tile.setHorizontalAlignment(SwingConstants.CENTER);
+		tile.setVerticalAlignment(SwingConstants.CENTER);
 		
 		// Set the background of the tile and make the background visible
-		// TODO: Calculate and set the background color of the tile
-		//            using a local factory method
-		// TODO: Set the JLabel to be opaque using setOpaque(true)
+		tile.setBackground(getTileColor(value));
+		tile.setOpaque(true);
 		
 		// Set the font style and color
-		// TODO: Set the font to be "Dialog", bold, and 32 pts
-		// TODO: Set the font color to be (119, 110, 101)
+		tile.setFont(new Font("Dialog", Font.BOLD, 32));
+		tile.setForeground(new Color(119, 110, 101));
 		
-		// Set the border
-		// TODO: Add a line border with color (187, 173, 160)
-		//            to represent the grid lines
+		// Set the border to be empty
+		tile.setBorder(BorderFactory.createLineBorder(new Color(187, 173, 160), 6));
 		
 		// All done! Return the newly created tile
-		// TODO: return the tile
+		return tile;
 	}
 	
 	
@@ -145,35 +145,104 @@ public class View extends JPanel {
 	 * Factory method for creating the appropriate Color object for a tile
 	 */
 	private static Color getTileColor(int value) {
-		// TODO: Based on the tile value, return the
-		//           correct color for the background
-		// empty -> (204, 193, 180)
-		// 2 -> (238, 228, 218)
-		// 4 -> (237, 224, 200)
-		// 8 -> (242, 177, 121)
-		// 16 -> (245, 149, 99)
-		// 32 -> (246, 124, 95)
-		// 64 -> (246, 94, 59)
-		// 128 -> (237, 207, 114)
-		// 256 -> (237, 204, 97)
-		// 512 -> (237, 200, 80)
-		// 1024 -> (237, 197, 63)
-		// 2048 -> (237, 194, 46)
-		// Otherwise -> (238, 228, 218) (this is the grid line color)
+		switch (value) {
+		case 0:
+			return new Color(204, 193, 180);
+		case 2:
+			return new Color(238, 228, 218);
+		case 4:
+			return new Color(237, 224, 200);
+		case 8:
+			return new Color(242, 177, 121);
+		case 16:
+			return new Color(245, 149, 99);
+		case 32:
+			return new Color(246, 124, 95);
+		case 64:
+			return new Color(246, 94, 59);
+		case 128:
+			return new Color(237, 207, 114);
+		case 256:
+			return new Color(237, 204, 97);
+		case 512:
+			return new Color(237, 200, 80);
+		case 1024:
+			return new Color(237, 197, 63);
+		case 2048:
+			return new Color(237, 194, 46);
+		default:
+			return new Color(238, 228, 218);
+		}
 	}
-	
-	
-	// Handle the reset button event
-	// TODO: Reset the model
-	// TODO: Refresh the UI component display
-	// TODO: Call requestFocusInWindow() to make sure
-    //           "this" will receive keyboard events
 
-	
-	// Handle the key press event
-	// TODO: Use getKeyCode() to get the key code of the pressed event
-	// TODO: Listen for VK_RIGHT, VK_LEFT, VK_DOWN, and VK_UP
-	// TODO: If the game can move in the requested direction,
-	//           then move the board and add a random tile
-	// TODO: Then, refresh the UI component display
+
+	/**
+	 * This method is executed by Java when the reset
+	 *   button is pressed
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		game.reset();
+		syncGameState();
+		requestFocusInWindow();
+	}
+
+
+	/**
+	 * This method is executed by Java when a
+	 *   keyboard key is typed (down and up)
+	 */
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+	}
+
+
+	/**
+	 * This method is executed by Java when a
+	 *   keyboard key is pressed down
+	 */
+	@Override
+	public void keyPressed(KeyEvent e) {
+		switch (e.getKeyCode()) {
+		case KeyEvent.VK_RIGHT:
+			if (game.canMove(Model.Direction.EAST)) {
+				game.move(Model.Direction.EAST);
+				game.addRandomTile();
+				syncGameState();
+			}
+			break;
+		case KeyEvent.VK_LEFT:
+			if (game.canMove(Model.Direction.WEST)) {
+				game.move(Model.Direction.WEST);
+				game.addRandomTile();
+				syncGameState();
+			}
+			break;
+		case KeyEvent.VK_DOWN:
+			if (game.canMove(Model.Direction.SOUTH)) {
+				game.move(Model.Direction.SOUTH);
+				game.addRandomTile();
+				syncGameState();
+			}
+			break;
+		case KeyEvent.VK_UP:
+			if (game.canMove(Model.Direction.NORTH)) {
+				game.move(Model.Direction.NORTH);
+				game.addRandomTile();
+				syncGameState();
+			}
+			break;
+		}
+	}
+
+
+	/**
+	 * This method is executed by Java when a
+	 *   keyboard key is released
+	 */
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+	}
 }

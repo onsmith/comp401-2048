@@ -7,9 +7,9 @@ public class Main {
 	public static void main(String[] args) {
 		// Create the main window
 		JFrame window = new JFrame();
-		// TODO: Set the window title
-		// TODO: Set the default close operation
-		// TODO: Disable resizing
+		window.setTitle("Play 2048!");
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		window.setResizable(false);
 
 		// Create a model to handle the game logic
 		Model game = new Model(4);
